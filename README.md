@@ -6,3 +6,4 @@ I put together a node app with a basic auth strategy that send data from a form 
   * Use `npm run lint:js` to lint your JS
   * Use `npm run lint:css` to lint your CSS
   * Use `npm test` to run tests
+  * Use `npm start to get the app started` to run tests
