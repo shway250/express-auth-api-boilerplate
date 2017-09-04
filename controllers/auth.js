@@ -3,6 +3,10 @@ var router = express.Router();
 var passport = require('../config/ppConfig');// require the passport configuration
 var db = require('../models');
 
+router.get('/signup', function(req, res) {
+  res.render('auth/signup');
+});
+
 router.post('/signup', function(req, res) {
   // find or create a user, providing the name and password as default values
   db.user.findOrCreate({
@@ -32,9 +36,12 @@ router.get('/login', function(req, res) {
   res.render('auth/login');
 });
 
+
 router.post('/login', passport.authenticate('local', {
   successRedirect: '/',
-  failureRedirect: '/auth/login'
+  failureRedirect: '/auth/login',
+  failureFlash: 'Invalid username and/or password',
+  successFlash: 'You have logged in'
 }));
 
 router.post('/signup', function(req, res) {
@@ -46,23 +53,27 @@ router.post('/signup', function(req, res) {
     }
   }).spread(function(user, created) {
     if (created) {
-      // replace the contents of this if statement with the code below
+      // FLASH
       passport.authenticate('local', {
-        successRedirect: '/'
+        successRedirect: '/',
+        successFlash: 'Account created and logged in'
       })(req, res);
     } else {
-      console.log('Email already exists');
+      // FLASH
+      req.flash('error', 'Email already exists');
       res.redirect('/auth/signup');
     }
   }).catch(function(error) {
-    console.log('An error occurred: ', error.message);
+    // FLASH
+    req.flash('error', error.message);
     res.redirect('/auth/signup');
   });
 });
 
 router.get('/logout', function(req, res) {
   req.logout();
-  console.log('logged out');
+  // FLASH
+  req.flash('success', 'You have logged out');
   res.redirect('/');
 });
 
